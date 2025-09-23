@@ -370,6 +370,40 @@ export async function deleteFireHose(id: string): Promise<boolean> {
 }
 
 /**
+ * Gets a FireHose ID by its number and owner ID
+ * @param number The number of the FireHose
+ * @param ownerId The ID of the owner
+ * @returns The FireHose ID or null if not found
+ * @throws Error if there was an error fetching the FireHose
+ */
+export async function getFireHoseIdByNumberAndOwner (
+  number: number,
+  ownerId: string,
+): Promise<string | null> {
+  if (!number) {
+    throw new Error("FireHose number is required");
+  }
+  if (!ownerId) {
+    throw new Error("Owner ID is required");
+  }
+
+  const fireHose = await prisma.fireHose.findFirst({
+    where: {
+      number: {
+        equals: number,
+      },
+      decommissionedAt: null,
+      ownerId: ownerId,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  return fireHose?.id || null;
+}
+
+/**
  * Finds the smallest number not assigned to an commissioned fire hose for a given owner
  * @param ownerId the owner to find the number for
  */

@@ -1,22 +1,18 @@
-import { getFireHoseByNumberAndOwner } from "@/lib/fireHoseRepository";
+import { getFireHoseById } from "@/lib/fireHoseRepository";
 import TouchButton from "@/app/_components/touch-button";
 import HoseDetails from "@/app/_components/hose-details";
 import Link from "next/link";
 
 export interface HosePageProps {
   params: Promise<{
-    number: string;
+    firehoseId: string;
   }>;
 }
 
 export default async function HosePage({ params }: HosePageProps) {
-  const { number } = await params;
-  const [owner, hoseNumber] = decodeURIComponent(number).split("__");
+  const { firehoseId } = await params;
 
-  const firehose = await getFireHoseByNumberAndOwner(
-    parseInt(hoseNumber),
-    owner,
-  );
+  const firehose = await getFireHoseById(firehoseId);
 
   if (!firehose) {
     return <div>Schlauch nicht gefunden</div>;
@@ -32,9 +28,7 @@ export default async function HosePage({ params }: HosePageProps) {
         <Link href="/">
           <TouchButton label="Abbrechen" />
         </Link>
-        <Link
-          href={`/hose/${firehose.owner.marker}__${firehose.number}/maintain`}
-        >
+        <Link href={`/hose/${firehose.id}/maintain`}>
           <TouchButton label="Reinigen & Prüfen" primary />
         </Link>
       </div>
